@@ -1,0 +1,1148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ISAAC Challenge Quest (Grade 2+)</title>
+  <style>
+    :root{
+      --bg:#080f1e; --panel:#0f1a33; --text:#eaf1ff; --muted:#b9c7ee;
+      --good:#54e39f; --bad:#ff6b6b; --accent:#7aa7ff; --accent2:#ffd166;
+      --shadow: 0 18px 55px rgba(0,0,0,.38); --radius: 16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(1200px 800px at 20% 10%, #172e66 0%, var(--bg) 55%, #050814 100%);
+      color:var(--text); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:18px;
+    }
+    .app{ width:min(1020px,100%); display:grid; grid-template-columns: 1.25fr .75fr; gap:14px; }
+    @media (max-width: 920px){ .app{grid-template-columns:1fr;} }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.12); border-radius: var(--radius);
+      box-shadow: var(--shadow); overflow:hidden;
+    }
+    header{
+      padding:16px 18px; border-bottom:1px solid rgba(255,255,255,.1);
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    header h1{ margin:0; font-size:18px; display:flex; align-items:center; gap:10px; letter-spacing:.3px; }
+    .pill{
+      font-size:12px; padding:6px 10px; border-radius:999px;
+      background: rgba(122,167,255,.18); border:1px solid rgba(122,167,255,.35);
+      color:var(--text); white-space:nowrap;
+    }
+    .main{ padding:16px 18px 18px; background: linear-gradient(180deg, rgba(15,26,51,.65), rgba(15,26,51,.3)); }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .stat{
+      background: rgba(0,0,0,.18); border:1px solid rgba(255,255,255,.12);
+      border-radius: 14px; padding:10px 12px; min-width: 120px;
+    }
+    .stat .label{ font-size:12px; color:var(--muted); }
+    .stat .value{ font-size:18px; font-weight:800; margin-top:2px; }
+    .big{
+      margin-top:14px; background: rgba(0,0,0,.16);
+      border:1px solid rgba(255,255,255,.14); border-radius: 18px; padding:14px;
+    }
+    .qtype{ font-size:12px; color: var(--accent2); text-transform:uppercase; letter-spacing:.5px; }
+    .question{ margin-top:6px; font-size:22px; line-height:1.22; font-weight:900; white-space:pre-wrap; }
+    .sub{ margin-top:6px; color:var(--muted); font-size:13px; }
+    .answers{ margin-top:14px; display:grid; grid-template-columns: repeat(2, 1fr); gap:10px; }
+    @media (max-width: 520px){ .answers{ grid-template-columns: 1fr; } }
+    .btn{
+      border:1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.06); color: var(--text);
+      border-radius: 14px; padding:12px 12px; cursor:pointer;
+      transition: transform .08s ease, background .15s ease, border-color .15s ease;
+      text-align:left; min-height: 48px; display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.09); }
+    .btn:active{ transform: translateY(0px); }
+    .btn.primary{ background: rgba(122,167,255,.16); border-color: rgba(122,167,255,.35); }
+    .btn.good{ background: rgba(84,227,159,.16); border-color: rgba(84,227,159,.5); }
+    .btn.bad{ background: rgba(255,107,107,.12); border-color: rgba(255,107,107,.5); }
+    .btn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
+    .tag{
+      font-size:12px; color: var(--muted); padding:4px 8px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.16); background: rgba(0,0,0,.15); white-space:nowrap;
+    }
+    .side{ padding:16px 18px 18px; background: linear-gradient(180deg, rgba(10,16,34,.65), rgba(10,16,34,.25)); }
+    .sectionTitle{ margin:0 0 10px 0; font-size:14px; color: var(--muted); text-transform:uppercase; letter-spacing:.3px; }
+    .controls{ display:flex; flex-direction:column; gap:10px; }
+    .mini{
+      padding:10px 12px; border-radius: 14px; border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.14); display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+    select, input[type="number"]{
+      background: rgba(255,255,255,.06); color: var(--text);
+      border:1px solid rgba(255,255,255,.18); border-radius: 12px; padding:8px 10px; outline:none;
+    }
+    input[type="range"]{ width: 160px; }
+    .bar{ margin-top:10px; height:10px; border-radius:999px; background: rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); overflow:hidden; }
+    .fill{ height:100%; width:0%; background: linear-gradient(90deg, rgba(122,167,255,.92), rgba(255,209,102,.92)); transition: width .25s ease; }
+    .log{
+      margin-top:12px; padding:10px 12px; border-radius: 14px;
+      background: rgba(0,0,0,.14); border:1px solid rgba(255,255,255,.12);
+      color: var(--muted); font-size:13px; min-height: 80px; line-height:1.25;
+    }
+    .stars{ display:flex; gap:6px; align-items:center; font-size:14px; }
+    .star{ filter: drop-shadow(0 6px 10px rgba(0,0,0,.35)); }
+    .footerRow{ margin-top:10px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
+    .kbd{ font-size:12px; color: var(--muted); }
+    .kbd code{ background: rgba(0,0,0,.18); border: 1px solid rgba(255,255,255,.16); padding:2px 6px; border-radius: 8px; color: var(--text); }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <div class="card">
+      <header>
+        <h1>⚡ ISAAC Challenge Quest </h1>
+        <div class="row">
+          <span class="pill" id="modePill">Mode: Quest</span>
+          <span class="pill" id="levelPill">Skill: 1</span>
+          <span class="pill" id="bossPill">Boss: Off</span>
+        </div>
+      </header>
+
+      <div class="main">
+        <div class="row">
+          <div class="stat"><div class="label">Score</div><div class="value" id="score">0</div></div>
+          <div class="stat"><div class="label">Streak</div><div class="value" id="streak">0</div></div>
+          <div class="stat"><div class="label">Lives</div><div class="value" id="lives">❤️❤️❤️</div></div>
+          <div class="stat"><div class="label">Question</div><div class="value"><span id="qIndex">1</span>/<span id="qTotal">12</span></div></div>
+        </div>
+
+        <div class="bar"><div class="fill" id="progressFill"></div></div>
+
+        <div class="big">
+          <div class="row" style="justify-content:space-between;">
+            <div>
+              <div class="qtype" id="qType">READY</div>
+              <div class="question" id="questionText">Press Start to begin!</div>
+              <div class="sub" id="questionSub">Harder questions show up as you build streaks.</div>
+            </div>
+            <div class="stars" title="Stars"><span class="star">⭐</span><span id="stars">0</span></div>
+          </div>
+
+          <div class="answers" id="answers"></div>
+
+          <div class="footerRow">
+            <div class="row">
+              <button class="btn primary" id="startBtn">▶ Start</button>
+              <button class="btn" id="hintBtn" disabled>💡 Hint</button>
+              <button class="btn" id="skipBtn" disabled>⏭ Skip</button>
+            </div>
+            <div class="kbd">Keys: <code>1</code> <code>2</code> <code>3</code> <code>4</code> • Hint <code>H</code> • Skip <code>S</code></div>
+          </div>
+
+          <div class="log" id="log">Set Challenge + Mode on the right. This version avoids generating the same question twice in one round.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <header>
+        <h1>🛠 Coach Panel <span class="pill">Tuning</span></h1>
+        <span class="pill" id="timerPill">Timer: Off</span>
+      </header>
+
+      <div class="side">
+        <h2 class="sectionTitle">Settings</h2>
+        <div class="controls">
+          <div class="mini">
+            <div>
+              <div style="font-weight:900;">Mode</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:2px;">Quest = lives • Quiz = test style</div>
+            </div>
+            <select id="modeSelect">
+              <option value="quest">Quest</option>
+              <option value="quiz">Quiz</option>
+            </select>
+          </div>
+
+          <div class="mini">
+            <div>
+              <div style="font-weight:900;">Questions</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:2px;">Per round</div>
+            </div>
+            <input id="numQuestions" type="number" min="6" max="30" value="12" />
+          </div>
+
+          <div class="mini">
+            <div>
+              <div style="font-weight:900;">Timer (Quiz)</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:2px;">Seconds per question</div>
+            </div>
+            <select id="timerSelect">
+              <option value="0">Off</option>
+              <option value="25">25s</option>
+              <option value="35">35s</option>
+              <option value="50">50s</option>
+            </select>
+          </div>
+
+          <div class="mini">
+            <div>
+              <div style="font-weight:900;">Challenge</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:2px;">Harder distractors + multi-step</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <input id="challenge" type="range" min="1" max="5" value="4" />
+              <span class="pill" id="challengePill">4/5</span>
+            </div>
+          </div>
+
+          <div class="mini">
+            <div>
+              <div style="font-weight:900;">Blend</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:2px;">More logic & patterns</div>
+            </div>
+            <select id="mixSelect">
+              <option value="logicHeavy">Logic-heavy</option>
+              <option value="balanced">Balanced</option>
+              <option value="mathHeavy">Math-heavy</option>
+            </select>
+          </div>
+
+          <div class="row">
+            <button class="btn" id="resetBtn">🔄 Reset</button>
+            <button class="btn" id="reviewBtn">📋 Review Mistakes</button>
+          </div>
+        </div>
+
+        <h2 class="sectionTitle" style="margin-top:14px;">What got harder</h2>
+        <div class="log">
+          • Multiplication as groups/arrays/repeated addition (2–10)<br/>
+          • Missing number equations (□ + 7 = 19, 4 × □ = 20)<br/>
+          • Pattern rules with two-step changes (+3 then −1, double then +1)<br/>
+          • Logic: constraints, “must be true,” if/then, sorting with clues<br/>
+          • Tougher distractors (near-miss answers)<br/>
+          • No repeats: each question has a unique ID per round
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const randInt = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+  const pick = (arr) => arr[randInt(0, arr.length-1)];
+  const shuffle = (arr) => {
+    const a = arr.slice();
+    for (let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  };
+  const clamp = (n,lo,hi) => Math.max(lo, Math.min(hi, n));
+
+  function safeKey(s){
+    return String(s).toLowerCase().replace(/\s+/g," ").trim().replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"").slice(0,80);
+  }
+
+  let state = {
+    running:false,
+    mode:"quest",
+    mix:"logicHeavy",
+    total:12,
+    index:0,
+    score:0,
+    streak:0,
+    bestStreak:0,
+    stars:0,
+    lives:3,
+    skill:1,          // adaptive skill (1..7)
+    challenge:4,      // user slider (1..5)
+    current:null,
+    timerSec:0,
+    timerHandle:null,
+    timeLeft:0,
+    mistakes:[],
+    seenQids: new Set(), // <-- prevent repeats within a run
+  };
+
+  // ----------- Core MCQ builder (numbers) -----------
+  function smartNumberChoices(correct, opts={}){
+    const c = Number(correct);
+    const ch = state.challenge; // 1..5
+    const skill = state.skill;
+
+    const spread = clamp(2 + ch + Math.floor(skill/2), 3, 14);
+
+    const distractors = new Set();
+
+    const candidates = [
+      c-1, c+1,
+      c-2, c+2,
+      c-10, c+10,
+      c + (c%10===0 ? -9 : 9),
+      c + (c%10===9 ? -9 : 11),
+    ].filter(x => x>=0);
+
+    shuffle(candidates).slice(0, ch+1).forEach(x => { if (x!==c) distractors.add(x); });
+
+    while (distractors.size < 3){
+      let d = c + randInt(-spread, spread);
+      if (d === c) continue;
+      if (opts.nonzero && d===0) continue;
+      if (d < 0) continue;
+      distractors.add(d);
+    }
+
+    let choices = Array.from(distractors).slice(0,3).concat([c]).map(String);
+    choices = shuffle(choices);
+    return { choices, answerIndex: choices.indexOf(String(c)) };
+  }
+
+  // ----------- Question Generators (Harder + qid) -----------
+
+  function genMultiplication(){
+    const variant = pick(["groups","missingFactor","arrayWord","repeatedAdd","compareProducts"]);
+    const maxFactor = clamp(5 + state.challenge + Math.floor(state.skill/2), 6, 10);
+    const a = randInt(2, maxFactor);
+    const b = randInt(2, maxFactor);
+
+    if (variant === "groups"){
+      const correct = a*b;
+      const {choices, answerIndex} = smartNumberChoices(correct, {nonzero:true});
+      return {
+        qid: `mul_groups_${a}_${b}`,
+        type:"Math • Multiplication",
+        prompt:`There are ${a} groups of ${b}. How many total?`,
+        sub:"Think: repeated addition or quick groups.",
+        choices, answerIndex,
+        hint:`Add ${b} + ${b} + … (${a} times).`
+      };
+    }
+
+    if (variant === "missingFactor"){
+      const product = a*b;
+      const missing = pick([a,b]);
+      const shown = (missing === a) ? b : a;
+      const prompt = `Fill the blank:  □ × ${shown} = ${product}`;
+      const {choices, answerIndex} = smartNumberChoices(missing, {nonzero:true});
+      return {
+        qid: `mul_missing_${product}_${shown}`,
+        type:"Math • Missing Number",
+        prompt,
+        sub:"Find the missing factor.",
+        choices, answerIndex,
+        hint:`Which number times ${shown} makes ${product}?`
+      };
+    }
+
+    if (variant === "arrayWord"){
+      const rows = a, cols = b;
+      const correct = rows*cols;
+      const {choices, answerIndex} = smartNumberChoices(correct, {nonzero:true});
+      return {
+        qid: `mul_array_${rows}x${cols}`,
+        type:"Math • Arrays",
+        prompt:`A sticker sheet has ${rows} rows with ${cols} stickers in each row. How many stickers?`,
+        sub:"Rows × stickers per row.",
+        choices, answerIndex,
+        hint:"Multiply rows by stickers in each row (or add the same number each row)."
+      };
+    }
+
+    if (variant === "repeatedAdd"){
+      const prompt = `Which is the same as ${a} × ${b}?`;
+      const right  = Array(a).fill(b).join(" + ");
+      const wrong1 = `${b} + ${a}`;
+      const wrong2 = `${b} + ${b}`;
+      const wrong3 = (a===b) ? `${a} + ${a} + ${a}` : (Array(Math.max(2,b-1)).fill(a).join(" + "));
+      const choices = shuffle([right, wrong1, wrong2, wrong3]);
+      return {
+        qid: `mul_equiv_${a}x${b}`,
+        type:"Logic • Equivalence",
+        prompt,
+        sub:"Choose the expression that matches.",
+        choices,
+        answerIndex: choices.indexOf(right),
+        hint:`${a} × ${b} means ${a} groups of ${b}.`
+      };
+    }
+
+    const c = randInt(2, maxFactor), d = randInt(2, maxFactor);
+    const left = `${a}×${b}`;
+    const right = `${c}×${d}`;
+    const leftVal = a*b, rightVal = c*d;
+    const correct = leftVal>rightVal ? left : (leftVal<rightVal ? right : "equal");
+    const choices = correct==="equal"
+      ? shuffle(["equal", left, right, "not sure"])
+      : shuffle([left, right, "equal", "not sure"]);
+    return {
+      qid: `mul_compare_${a}x${b}_vs_${c}x${d}`,
+      type:"Logic • Compare",
+      prompt:`Which is bigger?  ${left}  or  ${right}`,
+      sub:"You can reason with groups (no calculator).",
+      choices,
+      answerIndex: choices.indexOf(correct),
+      hint:"Compare by making a close match: bigger factor → bigger product (when the other is similar)."
+    };
+  }
+
+  function genPattern(){
+    const variant = pick(["twoStep","alt","multiplyAdd","shapeWord"]);
+
+    if (variant === "twoStep"){
+      const a = randInt(1, 8);
+      const plus = randInt(2, 6);
+      const minus = randInt(1, 4);
+      const seq = [a];
+      for (let i=1;i<5;i++){
+        const prev = seq[i-1];
+        seq.push(prev + (i%2===1 ? plus : -minus));
+      }
+      const correct = seq[4] + (5%2===1 ? plus : -minus);
+      const shown = [seq[0], seq[1], seq[2], seq[3], seq[4], "?"].join(", ");
+      const {choices, answerIndex} = smartNumberChoices(correct);
+      return {
+        qid: `pat_twostep_${a}_p${plus}_m${minus}`,
+        type:"Math • Pattern",
+        prompt:`What comes next?  ${shown}`,
+        sub:`Rule repeats: +${plus}, −${minus}, +${plus}, −${minus}...`,
+        choices, answerIndex,
+        hint:"Look at how it changes each step (it alternates)."
+      };
+    }
+
+    if (variant === "alt"){
+      const start1 = randInt(2, 10);
+      const start2 = randInt(1, 9);
+      const step1 = randInt(2, 6);
+      const step2 = randInt(1, 4);
+      const seq = [start1, start2, start1+step1, start2+step2, start1+2*step1, "?"];
+      const correct = start2+2*step2;
+      const {choices, answerIndex} = smartNumberChoices(correct);
+      return {
+        qid: `pat_alt_${start1}_${start2}_s${step1}_${step2}`,
+        type:"Logic • Pattern",
+        prompt:`Find the missing number: ${seq.join(", ")}`,
+        sub:"Two patterns are happening (odd spots and even spots).",
+        choices, answerIndex,
+        hint:"Look at 1st→3rd→5th and 2nd→4th→6th separately."
+      };
+    }
+
+    if (variant === "multiplyAdd"){
+      const start = randInt(1, 6);
+      const mult = pick([2,3]);
+      const add = randInt(1, 3);
+      const s1 = start;
+      const s2 = s1*mult + add;
+      const s3 = s2*mult + add;
+      const s4 = s3*mult + add;
+      const correct = s4*mult + add;
+      const shown = [s1, s2, s3, s4, "?"].join(", ");
+      const {choices, answerIndex} = smartNumberChoices(correct, {nonzero:true});
+      return {
+        qid: `pat_multadd_${start}_x${mult}_p${add}`,
+        type:"Math • Pattern",
+        prompt:`What comes next?  ${shown}`,
+        sub:`Rule: ×${mult} then +${add} each time.`,
+        choices, answerIndex,
+        hint:`Do: multiply by ${mult}, then add ${add}.`
+      };
+    }
+
+    const patterns = [
+      {seq:["A","B","B","A","B","B","?"], ans:"A", hint:"It repeats A, B, B."},
+      {seq:["red","blue","blue","red","blue","blue","?"], ans:"red", hint:"It repeats red, blue, blue."},
+      {seq:["square","circle","triangle","square","circle","triangle","?"], ans:"square", hint:"It repeats 3 shapes."}
+    ];
+    const p = pick(patterns);
+    const pool = ["A","B","red","blue","square","circle","triangle"].filter(x=>x!==p.ans);
+    const choices = shuffle([p.ans].concat(shuffle(pool).slice(0,3)));
+    return {
+      qid: `pat_shape_${p.seq.join("_")}`,
+      type:"Logic • Pattern",
+      prompt:`What comes next?  ${p.seq.join(", ")}`,
+      sub:"Find the repeating block.",
+      choices,
+      answerIndex: choices.indexOf(p.ans),
+      hint: p.hint
+    };
+  }
+
+  function genHardMath(){
+    const variant = pick(["missingAdd","missingSub","twoStepWord","compareNear","regroupLite"]);
+    const ch = state.challenge;
+
+    if (variant === "missingAdd"){
+      const sum = randInt(18, 70 + ch*10);
+      const a = randInt(6, sum-6);
+      const b = sum - a;
+      const prompt = `Fill the blank:  □ + ${a} = ${sum}`;
+      const {choices, answerIndex} = smartNumberChoices(b);
+      return { qid:`hm_missadd_${sum}_${a}`, type:"Math • Missing Number", prompt, sub:"Solve for □.", choices, answerIndex, hint:"Think: what plus a makes sum?" };
+    }
+
+    if (variant === "missingSub"){
+      const total = randInt(25, 90 + ch*10);
+      const left = randInt(10, total-5);
+      const right = total - left;
+      const prompt = `Fill the blank:  ${total} − □ = ${left}`;
+      const {choices, answerIndex} = smartNumberChoices(right);
+      return { qid:`hm_misssub_${total}_${left}`, type:"Math • Missing Number", prompt, sub:"Solve for □.", choices, answerIndex, hint:"What was taken away?" };
+    }
+
+    if (variant === "twoStepWord"){
+      const base = 40 + ch*15;
+      const a = randInt(25, base);
+      const b = randInt(10, 35);
+      const c = randInt(8, 25);
+      const form = pick(["plusMinus","minusPlus"]);
+      if (form==="plusMinus"){
+        const correct = a + b - c;
+        const {choices, answerIndex} = smartNumberChoices(correct);
+        return {
+          qid:`hm_twostep_${form}_${a}_${b}_${c}`,
+          type:"Math • Word • 2 steps",
+          prompt:`Sasha has ${a} points. She earns ${b} more, then loses ${c}. How many points now?`,
+          sub:"Two steps: add then subtract.",
+          choices, answerIndex,
+          hint:"Do it in order: first add, then subtract."
+        };
+      } else {
+        const correct = a - b + c;
+        const {choices, answerIndex} = smartNumberChoices(correct);
+        return {
+          qid:`hm_twostep_${form}_${a}_${b}_${c}`,
+          type:"Math • Word • 2 steps",
+          prompt:`Kai has ${a} cards. He gives away ${b}, then gets ${c} more. How many cards now?`,
+          sub:"Two steps: subtract then add.",
+          choices, answerIndex,
+          hint:"First take away, then add back."
+        };
+      }
+    }
+
+    if (variant === "compareNear"){
+      const x = randInt(40, 120);
+      const y = x + pick([-2,-1,1,2,9,-9]);
+      const prompt = `Which is greater?  ${x}  or  ${y}`;
+      const correct = x>y ? String(x) : String(y);
+      const choices = shuffle([String(x), String(y), "They are equal", "Not sure"]);
+      return {
+        qid:`hm_compare_${x}_${y}`,
+        type:"Logic • Compare",
+        prompt,
+        sub:"Close numbers—be careful!",
+        choices,
+        answerIndex: choices.indexOf(correct),
+        hint:"Compare tens first, then ones."
+      };
+    }
+
+    const tensA = randInt(3, 9), onesA = randInt(0, 9);
+    const tensB = randInt(1, tensA), onesB = randInt(0, 9);
+    const A = tensA*10 + onesA;
+    const B = tensB*10 + onesB;
+    const correct = A - B;
+    const {choices, answerIndex} = smartNumberChoices(correct);
+    return {
+      qid:`hm_regroup_${A}_${B}`,
+      type:"Math • Tens & Ones",
+      prompt:`${A} − ${B} = ?`,
+      sub:"Subtract tens and ones carefully.",
+      choices, answerIndex,
+      hint:"If ones are tricky, regroup: borrow 1 ten = 10 ones."
+    };
+  }
+
+  function genLogicBoss(){
+    const variant = pick(["mustBeTrue","logicGridLite","ifThenChain","oddRule"]);
+
+    if (variant === "mustBeTrue"){
+      const bank = [
+        {
+          key:"cats_animals",
+          prompt:"All cats are animals. Some animals are pets. Which MUST be true?",
+          choices:[
+            "Some cats are pets.",
+            "Cats are animals.",
+            "All pets are cats.",
+            "No animals are pets."
+          ],
+          ans:1,
+          hint:"Only the statement guaranteed by the first sentence is certain."
+        },
+        {
+          key:"heights_chain",
+          prompt:"Mia is taller than Ben. Ben is taller than Ava. Which MUST be true?",
+          choices:[
+            "Ava is taller than Mia.",
+            "Mia is taller than Ava.",
+            "Ben is taller than Mia.",
+            "They are all the same height."
+          ],
+          ans:1,
+          hint:"Use the chain: Mia > Ben > Ava."
+        },
+        {
+          key:"grade_school",
+          prompt:"Rule: If you are in 2nd grade, you are in school. Jay is in 2nd grade. Which MUST be true?",
+          choices:[
+            "Jay is in school.",
+            "Jay is in college.",
+            "Jay is a teacher.",
+            "Jay is not in school."
+          ],
+          ans:0,
+          hint:"Apply the if/then rule."
+        }
+      ];
+      const q = pick(bank);
+      return {
+        qid:`boss_must_${q.key}`,
+        type:"LOGIC BOSS • Must be true",
+        prompt:q.prompt,
+        sub:"Only one choice is guaranteed.",
+        choices:q.choices,
+        answerIndex:q.ans,
+        hint:q.hint
+      };
+    }
+
+    if (variant === "logicGridLite"){
+      const kids = ["Liam","Noah","Emma"];
+      const pets = ["cat","dog","fish"];
+      const mapping = shuffle(pets);
+      const LiamPet = mapping[0], NoahPet = mapping[1], EmmaPet = mapping[2];
+
+      const clues = [];
+      const not1 = pick(pets.filter(p=>p!==LiamPet));
+      clues.push(`${kids[0]} does NOT have the ${not1}.`);
+
+      const clue2type = pick(["has","not"]);
+      if (clue2type==="has") clues.push(`${kids[2]} has the ${EmmaPet}.`);
+      else clues.push(`${kids[2]} does NOT have the ${pick(pets.filter(p=>p!==EmmaPet))}.`);
+
+      clues.push(`${kids[1]} does NOT have the ${pick(pets.filter(p=>p!==NoahPet))}.`);
+
+      const askPet = pick(pets);
+      const correctKid = (askPet===LiamPet)?kids[0]:(askPet===NoahPet)?kids[1]:kids[2];
+
+      const prompt = `Three kids have different pets.\nClues:\n• ${clues.join("\n• ")}\n\nQuestion: Who has the ${askPet}?`;
+      const choices = shuffle(kids.concat(["Not enough info"]));
+
+      return {
+        qid:`boss_grid_${LiamPet}_${NoahPet}_${EmmaPet}_ask_${askPet}`,
+        type:"LOGIC BOSS • Clues",
+        prompt,
+        sub:"Use the clues to eliminate.",
+        choices,
+        answerIndex: choices.indexOf(correctKid),
+        hint:"Try a quick table: kid × pet. Cross out what can’t be true."
+      };
+    }
+
+    if (variant === "ifThenChain"){
+      const bank = [
+        {
+          key:"chores_token_game",
+          prompt:"If you finish your chores, then you get a token. If you get a token, then you can pick a game. You finished your chores. What MUST be true?",
+          choices:["You can pick a game.","You did not get a token.","You must go to sleep.","Nothing happens."],
+          ans:0,
+          hint:"Chores → token → pick a game."
+        },
+        {
+          key:"ends0_even_share",
+          prompt:"If a number ends in 0, then it is even. If a number is even, it can be split into 2 equal groups. The number is 20. What MUST be true?",
+          choices:["It can be split into 2 equal groups.","It is odd.","It ends in 5.","It is less than 10."],
+          ans:0,
+          hint:"Follow the rule chain."
+        }
+      ];
+      const q = pick(bank);
+      return {
+        qid:`boss_chain_${q.key}`,
+        type:"LOGIC BOSS • If/Then",
+        prompt:q.prompt,
+        sub:"Follow the chain.",
+        choices:q.choices,
+        answerIndex:q.ans,
+        hint:q.hint
+      };
+    }
+
+    const set = pick([
+      {items:[12, 14, 16], correct:"They are all even."},
+      {items:[15, 20, 25], correct:"They all end in 5 or 0."},
+      {items:[9, 18, 27], correct:"They are all multiples of 9."}
+    ]);
+    const prompt = `Numbers: ${set.items.join(", ")}\nWhich rule fits ALL of them?`;
+    const choices = shuffle([
+      set.correct,
+      "They are all odd.",
+      "They are all less than 10.",
+      "They are all prime."
+    ]);
+    return {
+      qid:`boss_rule_${set.items.join("_")}`,
+      type:"LOGIC BOSS • Rule",
+      prompt,
+      sub:"Pick the rule that fits every number.",
+      choices,
+      answerIndex: choices.indexOf(set.correct),
+      hint:"Test each number against the rule."
+    };
+  }
+
+  function genLogicBossLite(){
+    const variant = pick(["oddOneOutHard","trueFalseCareful","orderWithClue","equationSense"]);
+
+    if (variant === "oddOneOutHard"){
+      const sets = [
+        {key:"evenOdd", items:["12","14","15","16"], ans:"15", hint:"Three are even."},
+        {key:"products", items:["2×6","3×4","5×3","2×5"], ans:"5×3", hint:"Only one equals 15; others equal 12 or 10."},
+        {key:"ends9", items:["19","29","39","49"], ans:"19", hint:"Three end with 9 in 20s/30s/40s; one is a teen."}
+      ];
+      const s = pick(sets);
+      const choices = shuffle(s.items);
+      return {
+        qid:`lite_odd_${s.key}`,
+        type:"Logic",
+        prompt:`Which does NOT belong?  ${choices.join(", ")}`,
+        sub:"Look for a hidden rule.",
+        choices,
+        answerIndex: choices.indexOf(s.ans),
+        hint:s.hint
+      };
+    }
+
+    if (variant === "trueFalseCareful"){
+      const bank = [
+        {
+          key:"multiple7",
+          prompt:"Which statement is TRUE?",
+          choices:["All multiples of 2 are odd.","14 is a multiple of 7.","9 is even.","0 is greater than 1."],
+          ans:1,
+          hint:"Multiples of 7: 7, 14, 21..."
+        },
+        {
+          key:"threeGroups",
+          prompt:"Which statement is TRUE?",
+          choices:["If a number ends in 5, it is even.","36 is 3 groups of 12.","10 is less than 9.","All rectangles are triangles."],
+          ans:1,
+          hint:"3 groups of 12 means 12+12+12."
+        }
+      ];
+      const q = pick(bank);
+      return { qid:`lite_true_${q.key}`, type:"Logic", prompt:q.prompt, sub:"Only one is true.", choices:q.choices, answerIndex:q.ans, hint:q.hint };
+    }
+
+    if (variant === "orderWithClue"){
+      const a=randInt(10,60), b=randInt(10,60), c=randInt(10,60);
+      const nums=[a,b,c];
+      const sorted=nums.slice().sort((x,y)=>x-y);
+      const middle = String(sorted[1]);
+      const prompt = `Numbers: ${nums.join(", ")}\nWhich is the MIDDLE number (not smallest, not biggest)?`;
+      const choices = shuffle([String(a),String(b),String(c),"Not enough info"]);
+      return {
+        qid:`lite_median_${sorted.join("_")}`,
+        type:"Logic",
+        prompt,
+        sub:"Find the median of 3 numbers.",
+        choices,
+        answerIndex: choices.indexOf(middle),
+        hint:"Sort them in your head: smallest • middle • biggest."
+      };
+    }
+
+    const a = randInt(2,10), b = randInt(2,10);
+    const prod = a*b;
+    const prompt = `Which equation is TRUE?`;
+    const correct = `${a} × ${b} = ${prod}`;
+    const wrong1 = `${a} × ${b} = ${prod + pick([1,2,3,5])}`;
+    const wrong2 = `${a} + ${b} = ${prod}`;
+    const wrong3 = `${prod} ÷ ${a} = ${b+1}`;
+    const choices = shuffle([correct, wrong1, wrong2, wrong3]);
+    return {
+      qid:`lite_eq_${a}_${b}_${prod}`,
+      type:"Logic • Equation",
+      prompt,
+      sub:"Only one equation is correct.",
+      choices,
+      answerIndex: choices.indexOf(correct),
+      hint:"Multiply means groups, not adding just once."
+    };
+  }
+
+  function chooseQuestion(){
+    const bossEvery = clamp(6 - Math.floor(state.challenge/2), 3, 6);
+    const isBoss = (state.index > 0 && (state.index % bossEvery === bossEvery-1));
+    $("bossPill").textContent = `Boss: ${isBoss ? "On" : "Off"}`;
+
+    if (isBoss) return genLogicBoss();
+
+    const r = Math.random();
+    if (state.mix === "logicHeavy"){
+      if (r < 0.55) return genPattern();
+      if (r < 0.85) return genLogicBossLite();
+      return (Math.random() < 0.55) ? genMultiplication() : genHardMath();
+    }
+    if (state.mix === "mathHeavy"){
+      if (r < 0.40) return genMultiplication();
+      if (r < 0.70) return genHardMath();
+      if (r < 0.88) return genPattern();
+      return genLogicBossLite();
+    }
+    if (r < 0.30) return genPattern();
+    if (r < 0.55) return genMultiplication();
+    if (r < 0.80) return genHardMath();
+    return genLogicBossLite();
+  }
+
+  // ----------- UI / Flow -----------
+  function setMode(mode){
+    state.mode = mode;
+    $("modePill").textContent = `Mode: ${mode==="quest" ? "Quest" : "Quiz"}`;
+    state.lives = (mode==="quest") ? 3 : 0;
+    renderLives();
+  }
+
+  function renderLives(){
+    $("lives").textContent = (state.mode==="quest") ? ("❤️".repeat(Math.max(0,state.lives)) || "—") : "—";
+  }
+
+  function renderStats(){
+    $("score").textContent = state.score;
+    $("streak").textContent = state.streak;
+    $("stars").textContent = state.stars;
+    $("qTotal").textContent = state.total;
+    $("qIndex").textContent = Math.min(state.index + (state.running?1:0), state.total);
+    $("levelPill").textContent = `Skill: ${state.skill}`;
+    $("challengePill").textContent = `${state.challenge}/5`;
+    const pct = state.total ? (state.index / state.total) * 100 : 0;
+    $("progressFill").style.width = `${pct}%`;
+  }
+
+  function setLog(html){ $("log").innerHTML = html; }
+
+  function stopTimer(){
+    if (state.timerHandle){ clearInterval(state.timerHandle); state.timerHandle=null; }
+    $("timerPill").textContent = `Timer: ${state.timerSec ? "On" : "Off"}`;
+  }
+
+  function startTimerIfNeeded(){
+    stopTimer();
+    if (state.mode !== "quiz") return;
+    if (!state.timerSec) return;
+    state.timeLeft = state.timerSec;
+    $("timerPill").textContent = `Timer: ${state.timeLeft}s`;
+    state.timerHandle = setInterval(() => {
+      state.timeLeft -= 1;
+      $("timerPill").textContent = `Timer: ${state.timeLeft}s`;
+      if (state.timeLeft <= 0){
+        stopTimer();
+        lockAnswers();
+        handleAnswer(-1, true);
+      }
+    }, 1000);
+  }
+
+  function lockAnswers(){
+    $("answers").querySelectorAll("button").forEach(b => b.disabled = true);
+    $("skipBtn").disabled = true;
+  }
+  function unlockAnswers(){
+    $("answers").querySelectorAll("button").forEach(b => b.disabled = false);
+    $("skipBtn").disabled = false;
+  }
+  function escapeHtml(s){
+    return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+  }
+
+  function renderQuestion(q){
+    $("qType").textContent = q.type.toUpperCase();
+    $("questionText").textContent = q.prompt;
+    $("questionSub").textContent = q.sub;
+
+    const container = $("answers");
+    container.innerHTML = "";
+    q.choices.forEach((c, idx) => {
+      const b = document.createElement("button");
+      b.className = "btn";
+      b.innerHTML = `<span style="font-weight:900">${idx+1}.</span>
+                     <span style="flex:1">${escapeHtml(c)}</span>
+                     <span class="tag">tap</span>`;
+      b.addEventListener("click", () => handleAnswer(idx, false));
+      container.appendChild(b);
+    });
+
+    $("hintBtn").disabled = false;
+    $("skipBtn").disabled = false;
+    unlockAnswers();
+    renderStats();
+    renderLives();
+    startTimerIfNeeded();
+  }
+
+  function awardStars(){
+    if (state.streak === 3) state.stars += 1;
+    if (state.streak === 5) state.stars += 1;
+    if (state.streak === 8) state.stars += 1;
+  }
+
+  function adaptSkill(correct){
+    if (correct){
+      if (state.streak > 0 && state.streak % 2 === 0){
+        state.skill = clamp(state.skill + 1, 1, 7);
+      }
+    } else {
+      state.skill = clamp(state.skill - 1, 1, 7);
+    }
+  }
+
+  function markButtons(chosenIdx){
+    const btns = Array.from($("answers").querySelectorAll("button"));
+    btns.forEach((b, i) => {
+      if (i === state.current.answerIndex) b.classList.add("good");
+      if (chosenIdx === i && i !== state.current.answerIndex) b.classList.add("bad");
+      b.disabled = true;
+    });
+  }
+
+  function handleAnswer(chosenIdx, isTimeout){
+    stopTimer();
+    const q = state.current;
+    const correct = (chosenIdx === q.answerIndex);
+
+    if (chosenIdx >= 0) markButtons(chosenIdx);
+    else {
+      const btns = Array.from($("answers").querySelectorAll("button"));
+      btns.forEach((b, i) => { if (i === q.answerIndex) b.classList.add("good"); b.disabled=true; });
+    }
+
+    if (correct){
+      const bonus = Math.min(12, state.streak*2);
+      const base = q.type.includes("BOSS") ? 16 : 12;
+      state.score += base + bonus;
+      state.streak += 1;
+      state.bestStreak = Math.max(state.bestStreak, state.streak);
+      awardStars();
+      adaptSkill(true);
+
+      const cheer = pick(["Correct ✅","Nice! ✅","Great reasoning ✅","Sharp! ✅"]);
+      setLog(`${cheer} <span style="color:var(--muted)">(${escapeHtml(q.type)})</span>`);
+    } else {
+      const chosenText = (chosenIdx >= 0) ? q.choices[chosenIdx] : "(time ran out)";
+      state.mistakes.push({ q, chosen: chosenText, correct: q.choices[q.answerIndex] });
+
+      state.streak = 0;
+      adaptSkill(false);
+
+      if (state.mode === "quest"){
+        state.lives -= 1;
+        renderLives();
+        if (state.lives <= 0){
+          setLog(`Out of lives 💔 Correct: <b>${escapeHtml(q.choices[q.answerIndex])}</b><br><span style="color:var(--muted)">Press Start Again for a new round.</span>`);
+          state.index = state.total;
+          setTimeout(endRound, 700);
+          return;
+        }
+      }
+      const why = isTimeout ? "⏰ Time's up!" : "Not quite.";
+      setLog(`${why} ❌ Correct: <b>${escapeHtml(q.choices[q.answerIndex])}</b>`);
+    }
+
+    state.index += 1;
+    renderStats();
+    setTimeout(nextQuestion, 700);
+  }
+
+  function useHint(){
+    if (!state.running || !state.current) return;
+
+    const penalty = (state.mode==="quiz") ? 5 : 2;
+    state.score = Math.max(0, state.score - penalty);
+
+    const correctIdx = state.current.answerIndex;
+    const wrongIdxs = [0,1,2,3].filter(i => i !== correctIdx);
+    const disableCount = state.current.type.includes("BOSS") ? 1 : 2;
+    const toDisable = shuffle(wrongIdxs).slice(0, disableCount);
+
+    const btns = Array.from($("answers").querySelectorAll("button"));
+    toDisable.forEach(i => {
+      btns[i].disabled = true;
+      btns[i].style.opacity = "0.35";
+    });
+
+    setLog(`💡 Hint: ${escapeHtml(state.current.hint)} <span style="color:var(--muted)">(-${penalty} points)</span>`);
+    renderStats();
+    $("hintBtn").disabled = true;
+  }
+
+  function skipQuestion(){
+    if (!state.running) return;
+    stopTimer();
+    lockAnswers();
+    state.streak = 0;
+    const penalty = (state.mode==="quiz") ? 4 : 2;
+    state.score = Math.max(0, state.score - penalty);
+    setLog(`Skipped. <span style="color:var(--muted)">(-${penalty} points)</span>`);
+    state.index += 1;
+    renderStats();
+    setTimeout(nextQuestion, 450);
+  }
+
+  // ----------- No-repeat nextQuestion() -----------
+  function nextQuestion(){
+    if (state.index >= state.total){ endRound(); return; }
+
+    const MAX_TRIES = 70;
+    let q = null;
+
+    for (let t = 0; t < MAX_TRIES; t++){
+      const candidate = chooseQuestion();
+      const qid = candidate.qid || (`fallback_${safeKey(candidate.type)}_${safeKey(candidate.prompt)}_${safeKey(candidate.choices.join("~"))}`);
+
+      if (!state.seenQids.has(qid)){
+        state.seenQids.add(qid);
+        candidate.qid = qid;
+        q = candidate;
+        break;
+      }
+    }
+
+    if (!q){
+      // If variety is exhausted, allow repeats rather than stalling.
+      q = chooseQuestion();
+      q.qid = q.qid || (`fallback_${safeKey(q.type)}_${safeKey(q.prompt)}_${safeKey(q.choices.join("~"))}`);
+      setLog(`⚠️ Variety is running low with these settings. I had to allow a repeat.`);
+    }
+
+    state.current = q;
+    renderQuestion(q);
+  }
+
+  function endRound(){
+    state.running = false;
+    stopTimer();
+    $("startBtn").textContent = "▶ Start Again";
+    $("hintBtn").disabled = true;
+    $("skipBtn").disabled = true;
+    $("answers").innerHTML = "";
+
+    const title = state.mode==="quiz" ? "Quiz Complete!" : "Quest Complete!";
+    setLog(`<div style="color:var(--text);font-weight:950;font-size:16px;margin-bottom:6px;">${title}</div>
+      <div>Score: <b>${state.score}</b> • Stars: <b>${state.stars}</b> • Best streak: <b>${state.bestStreak}</b> • Skill: <b>${state.skill}</b></div>
+      <div style="margin-top:6px;color:var(--muted);">Use “Review Mistakes” to practice the hard ones.</div>`);
+    renderStats();
+  }
+
+  function startRound(){
+    stopTimer();
+    state.running = true;
+    state.index = 0;
+    state.score = 0;
+    state.streak = 0;
+    state.bestStreak = 0;
+    state.stars = 0;
+    state.mistakes = [];
+    state.seenQids = new Set(); // reset uniqueness per round
+
+    state.total = clamp(parseInt($("numQuestions").value,10)||12, 6, 30);
+    $("numQuestions").value = state.total;
+
+    state.timerSec = clamp(parseInt($("timerSelect").value,10)||0, 0, 120);
+    $("timerPill").textContent = `Timer: ${state.timerSec ? "On" : "Off"}`;
+
+    state.lives = (state.mode==="quest") ? 3 : 0;
+    state.skill = clamp(1 + Math.floor((state.challenge-1)*1.2), 1, 7);
+
+    $("startBtn").textContent = "⏳ Playing...";
+    $("startBtn").disabled = true;
+    setTimeout(()=>$("startBtn").disabled=false, 350);
+
+    setLog(`Round started. Challenge <b>${state.challenge}/5</b>. No repeats this round (unless variety runs out).`);
+    renderStats();
+    renderLives();
+    nextQuestion();
+  }
+
+  function resetAll(){
+    stopTimer();
+    state.running = false;
+    state.index = 0;
+    state.score = 0;
+    state.streak = 0;
+    state.bestStreak = 0;
+    state.stars = 0;
+    state.mistakes = [];
+    state.current = null;
+    state.skill = 1;
+    state.lives = (state.mode==="quest") ? 3 : 0;
+    state.seenQids = new Set();
+
+    $("answers").innerHTML = "";
+    $("qType").textContent = "READY";
+    $("questionText").textContent = "Press Start to begin!";
+    $("questionSub").textContent = "Harder questions show up as you build streaks.";
+    $("startBtn").textContent = "▶ Start";
+    $("hintBtn").disabled = true;
+    $("skipBtn").disabled = true;
+    $("bossPill").textContent = "Boss: Off";
+    setLog("Reset done. Set Challenge + Blend and press Start.");
+    renderStats();
+    renderLives();
+  }
+
+  function reviewMistakes(){
+    if (!state.mistakes.length){ setLog("No mistakes to review yet ✅"); return; }
+    const last = state.mistakes.slice(-7).reverse();
+    const html = last.map((m,i)=>`
+      <div style="margin-bottom:9px;">
+        <div style="color:var(--text);font-weight:950;">${i+1}) ${escapeHtml(m.q.prompt).replaceAll("\n","<br>")}</div>
+        <div style="color:var(--muted);">Your answer: <b>${escapeHtml(m.chosen)}</b> • Correct: <b>${escapeHtml(m.correct)}</b></div>
+        <div style="color:var(--muted);">Hint: ${escapeHtml(m.q.hint)}</div>
+      </div>
+    `).join("");
+    setLog(`<div style="color:var(--text);font-weight:950;margin-bottom:6px;">Review Mistakes</div>${html}`);
+  }
+
+  // ----------- Events -----------
+  $("modeSelect").addEventListener("change", e => { setMode(e.target.value); resetAll(); });
+  $("mixSelect").addEventListener("change", e => { state.mix = e.target.value; setLog(`Blend set to <b>${state.mix}</b>.`); });
+  $("timerSelect").addEventListener("change", e => {
+    state.timerSec = parseInt(e.target.value,10)||0;
+    $("timerPill").textContent = `Timer: ${state.timerSec ? "On" : "Off"}`;
+    setLog(`Timer: <b>${state.timerSec ? state.timerSec+"s" : "Off"}</b> (Quiz mode only).`);
+  });
+  $("challenge").addEventListener("input", e => {
+    state.challenge = parseInt(e.target.value,10);
+    $("challengePill").textContent = `${state.challenge}/5`;
+  });
+
+  $("startBtn").addEventListener("click", startRound);
+  $("hintBtn").addEventListener("click", useHint);
+  $("skipBtn").addEventListener("click", skipQuestion);
+  $("resetBtn").addEventListener("click", resetAll);
+  $("reviewBtn").addEventListener("click", reviewMistakes);
+
+  window.addEventListener("keydown", (e) => {
+    if (!state.running) return;
+    const k = e.key;
+    if (k>="1" && k<="4"){
+      const idx = parseInt(k,10)-1;
+      const btns = Array.from($("answers").querySelectorAll("button"));
+      if (btns[idx] && !btns[idx].disabled) btns[idx].click();
+    }
+    if ((k==="h"||k==="H") && !$("hintBtn").disabled) $("hintBtn").click();
+    if ((k==="s"||k==="S") && !$("skipBtn").disabled) $("skipBtn").click();
+  });
+
+  // init
+  setMode("quest");
+  state.mix = $("mixSelect").value;
+  state.challenge = parseInt($("challenge").value,10);
+  renderStats(); renderLives();
+})();
+</script>
+</body>
+</html>
