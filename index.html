@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ISAAC Challenge Quest (Grade 2+)</title>
+  <title>APAAS Challenge Quest (Grade 2+) — No Repeats + 4-Week Multiplication Roadmap</title>
   <style>
     :root{
       --bg:#080f1e; --panel:#0f1a33; --text:#eaf1ff; --muted:#b9c7ee;
@@ -16,7 +16,7 @@
       background: radial-gradient(1200px 800px at 20% 10%, #172e66 0%, var(--bg) 55%, #050814 100%);
       color:var(--text); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:18px;
     }
-    .app{ width:min(1020px,100%); display:grid; grid-template-columns: 1.25fr .75fr; gap:14px; }
+    .app{ width:min(1040px,100%); display:grid; grid-template-columns: 1.25fr .75fr; gap:14px; }
     @media (max-width: 920px){ .app{grid-template-columns:1fr;} }
     .card{
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
@@ -78,6 +78,7 @@
       border:1px solid rgba(255,255,255,.18); border-radius: 12px; padding:8px 10px; outline:none;
     }
     input[type="range"]{ width: 160px; }
+    input[type="checkbox"]{ transform: scale(1.1); }
     .bar{ margin-top:10px; height:10px; border-radius:999px; background: rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); overflow:hidden; }
     .fill{ height:100%; width:0%; background: linear-gradient(90deg, rgba(122,167,255,.92), rgba(255,209,102,.92)); transition: width .25s ease; }
     .log{
@@ -97,11 +98,12 @@
   <div class="app">
     <div class="card">
       <header>
-        <h1>⚡ ISAAC Challenge Quest </h1>
+        <h1>⚡ APAAS Challenge Quest <span class="pill">No repeats + 4-week multiplication</span></h1>
         <div class="row">
           <span class="pill" id="modePill">Mode: Quest</span>
           <span class="pill" id="levelPill">Skill: 1</span>
           <span class="pill" id="bossPill">Boss: Off</span>
+          <span class="pill" id="roadmapPill">Roadmap: Off</span>
         </div>
       </header>
 
@@ -120,7 +122,7 @@
             <div>
               <div class="qtype" id="qType">READY</div>
               <div class="question" id="questionText">Press Start to begin!</div>
-              <div class="sub" id="questionSub">Harder questions show up as you build streaks.</div>
+              <div class="sub" id="questionSub">Roadmap questions are curated and won’t repeat in a round.</div>
             </div>
             <div class="stars" title="Stars"><span class="star">⭐</span><span id="stars">0</span></div>
           </div>
@@ -136,7 +138,9 @@
             <div class="kbd">Keys: <code>1</code> <code>2</code> <code>3</code> <code>4</code> • Hint <code>H</code> • Skip <code>S</code></div>
           </div>
 
-          <div class="log" id="log">Set Challenge + Mode on the right. This version avoids generating the same question twice in one round.</div>
+          <div class="log" id="log">
+            Turn on “4-week multiplication roadmap” on the right to inject curated accelerated multiplication questions.
+          </div>
         </div>
       </div>
     </div>
@@ -196,12 +200,50 @@
           <div class="mini">
             <div>
               <div style="font-weight:900;">Blend</div>
-              <div style="font-size:12px;color:var(--muted);margin-top:2px;">More logic & patterns</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:2px;">Logic/pattern weighting</div>
             </div>
             <select id="mixSelect">
               <option value="logicHeavy">Logic-heavy</option>
               <option value="balanced">Balanced</option>
               <option value="mathHeavy">Math-heavy</option>
+            </select>
+          </div>
+
+          <h2 class="sectionTitle" style="margin-top:10px;">4-week accelerated multiplication roadmap</h2>
+
+          <div class="mini">
+            <div>
+              <div style="font-weight:900;">Enable Roadmap</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:2px;">Inject curated accelerated multiplication questions</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <input id="roadmapEnable" type="checkbox" />
+              <span class="pill" id="roadmapEnablePill">Off</span>
+            </div>
+          </div>
+
+          <div class="mini">
+            <div>
+              <div style="font-weight:900;">Roadmap Week</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:2px;">Week 1→4 progression</div>
+            </div>
+            <select id="roadmapWeek">
+              <option value="1">Week 1 — groups & repeated addition</option>
+              <option value="2">Week 2 — arrays & skip counting</option>
+              <option value="3">Week 3 — unknown factor & division idea</option>
+              <option value="4">Week 4 — multi-step word problems & strategy</option>
+            </select>
+          </div>
+
+          <div class="mini">
+            <div>
+              <div style="font-weight:900;">Roadmap Mix</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:2px;">How often roadmap appears</div>
+            </div>
+            <select id="roadmapMix">
+              <option value="mix">Blend into game</option>
+              <option value="often">Mostly roadmap</option>
+              <option value="only">Roadmap only</option>
             </select>
           </div>
 
@@ -211,14 +253,12 @@
           </div>
         </div>
 
-        <h2 class="sectionTitle" style="margin-top:14px;">What got harder</h2>
-        <div class="log">
-          • Multiplication as groups/arrays/repeated addition (2–10)<br/>
-          • Missing number equations (□ + 7 = 19, 4 × □ = 20)<br/>
-          • Pattern rules with two-step changes (+3 then −1, double then +1)<br/>
-          • Logic: constraints, “must be true,” if/then, sorting with clues<br/>
-          • Tougher distractors (near-miss answers)<br/>
-          • No repeats: each question has a unique ID per round
+        <h2 class="sectionTitle" style="margin-top:14px;">Roadmap summary</h2>
+        <div class="log" id="roadmapSummary">
+          Week 1: groups, repeated addition, equal groups, small facts<br/>
+          Week 2: arrays, skip-count by 2/3/4/5/10, choose expression<br/>
+          Week 3: missing factor, “how many groups?”, division-as-sharing idea<br/>
+          Week 4: multi-step word problems, compare strategies, distributive thinking
         </div>
       </div>
     </div>
@@ -240,7 +280,7 @@
   const clamp = (n,lo,hi) => Math.max(lo, Math.min(hi, n));
 
   function safeKey(s){
-    return String(s).toLowerCase().replace(/\s+/g," ").trim().replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"").slice(0,80);
+    return String(s).toLowerCase().replace(/\s+/g," ").trim().replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"").slice(0,120);
   }
 
   let state = {
@@ -254,30 +294,294 @@
     bestStreak:0,
     stars:0,
     lives:3,
-    skill:1,          // adaptive skill (1..7)
-    challenge:4,      // user slider (1..5)
+    skill:1,
+    challenge:4,
     current:null,
     timerSec:0,
     timerHandle:null,
     timeLeft:0,
     mistakes:[],
-    seenQids: new Set(), // <-- prevent repeats within a run
+    seenQids: new Set(),
+
+    roadmapEnabled:false,
+    roadmapWeek:1,
+    roadmapMix:"mix",   // mix | often | only
   };
 
-  // ----------- Core MCQ builder (numbers) -----------
+  // -------------------- 4-week accelerated multiplication roadmap (curated bank) --------------------
+  // Note: This is a curated “accelerated multiplication” progression designed to match typical APAAS-style enrichment.
+  // Each item MUST include qid so "no repeats in a run" works cleanly.
+
+  function mcqFromCorrect({qid, type, prompt, sub, correct, hint, minWrong=0}){
+    // Create 3 number distractors close to correct
+    const c = Number(correct);
+    const spread = clamp(3 + state.challenge + Math.floor(state.skill/2), 4, 16);
+    const ds = new Set();
+    const near = [c-1,c+1,c-2,c+2,c-5,c+5,c-10,c+10].filter(x=>x>=minWrong);
+    shuffle(near).slice(0, 3).forEach(x=>ds.add(x));
+    while (ds.size < 3){
+      const d = c + randInt(-spread, spread);
+      if (d===c) continue;
+      if (d<minWrong) continue;
+      ds.add(d);
+    }
+    let choices = shuffle([c, ...Array.from(ds).slice(0,3)]).map(String);
+    return {
+      qid, type, prompt, sub,
+      choices,
+      answerIndex: choices.indexOf(String(c)),
+      hint
+    };
+  }
+
+  const ROADMAP = {
+    1: [
+      mcqFromCorrect({
+        qid:"rm_w1_groups_3x4",
+        type:"Roadmap W1 • Equal Groups",
+        prompt:"3 groups of 4. How many in all?",
+        sub:"Repeated addition → multiplication idea.",
+        correct:12,
+        hint:"Add 4 + 4 + 4."
+      }),
+      mcqFromCorrect({
+        qid:"rm_w1_groups_5x2",
+        type:"Roadmap W1 • Equal Groups",
+        prompt:"5 groups of 2. How many in all?",
+        sub:"Count by 2s.",
+        correct:10,
+        hint:"2, 4, 6, 8, 10."
+      }),
+      {
+        qid:"rm_w1_match_expression_4x3",
+        type:"Roadmap W1 • Meaning",
+        prompt:"Which shows 4 groups of 3?",
+        sub:"Pick the expression that matches the story.",
+        choices: shuffle(["3+3+3+3", "4+3", "4+4+4", "3+4+3"]).map(String),
+        answerIndex: 0, // will fix after shuffle below
+        hint:"4 groups of 3 means add 3 four times."
+      },
+      mcqFromCorrect({
+        qid:"rm_w1_fact_6x3",
+        type:"Roadmap W1 • Basic Fact",
+        prompt:"6 × 3 = ?",
+        sub:"Use skip counting or groups.",
+        correct:18,
+        hint:"Count by 3s: 3, 6, 9, 12, 15, 18."
+      }),
+      mcqFromCorrect({
+        qid:"rm_w1_groups_word_4x5",
+        type:"Roadmap W1 • Word Problem",
+        prompt:"There are 4 bags with 5 apples in each bag. How many apples?",
+        sub:"Equal groups in a story.",
+        correct:20,
+        hint:"5+5+5+5."
+      }),
+    ],
+    2: [
+      mcqFromCorrect({
+        qid:"rm_w2_array_3x6",
+        type:"Roadmap W2 • Arrays",
+        prompt:"An array has 3 rows and 6 columns. How many dots?",
+        sub:"Rows × columns.",
+        correct:18,
+        hint:"3 rows of 6 means 6+6+6."
+      }),
+      {
+        qid:"rm_w2_skip_by_4",
+        type:"Roadmap W2 • Skip Counting",
+        prompt:"What is the 6th number when you skip-count by 4 starting at 4?",
+        sub:"Skip count carefully.",
+        choices: ["20","24","28","16"],
+        answerIndex: 1, // 4,8,12,16,20,24
+        hint:"4, 8, 12, 16, 20, 24."
+      },
+      {
+        qid:"rm_w2_equation_from_array",
+        type:"Roadmap W2 • Expression",
+        prompt:"A rectangle has 2 rows of 7. Which equation matches?",
+        sub:"Pick the best equation.",
+        choices: shuffle(["2×7=14","2+7=9","7−2=5","7×7=49"]),
+        answerIndex: 0,
+        hint:"2 rows of 7 means 2 groups of 7."
+      },
+      mcqFromCorrect({
+        qid:"rm_w2_related_facts_5x6",
+        type:"Roadmap W2 • Fact Strategy",
+        prompt:"If you know 5×6=30, what is 6×5?",
+        sub:"Use commutative property (order can switch).",
+        correct:30,
+        hint:"Switching factors doesn’t change the product."
+      }),
+      mcqFromCorrect({
+        qid:"rm_w2_make_tens_9x2",
+        type:"Roadmap W2 • Double Strategy",
+        prompt:"9 × 2 = ?",
+        sub:"Doubling.",
+        correct:18,
+        hint:"Double 9."
+      }),
+    ],
+    3: [
+      mcqFromCorrect({
+        qid:"rm_w3_missing_factor_4x__=28",
+        type:"Roadmap W3 • Missing Factor",
+        prompt:"Fill the blank: 4 × □ = 28",
+        sub:"Unknown factor.",
+        correct:7,
+        hint:"What times 4 gives 28?"
+      }),
+      mcqFromCorrect({
+        qid:"rm_w3_how_many_groups_24_div_6",
+        type:"Roadmap W3 • How Many Groups",
+        prompt:"24 items are shared into groups of 6. How many groups?",
+        sub:"Division idea: how many groups?",
+        correct:4,
+        hint:"Count groups of 6: 6,12,18,24."
+      }),
+      {
+        qid:"rm_w3_true_statement",
+        type:"Roadmap W3 • Reasoning",
+        prompt:"Which statement is TRUE?",
+        sub:"Multiplication and division meaning.",
+        choices: shuffle([
+          "If 3×5=15, then 15÷5=3",
+          "If 3×5=15, then 15÷3=1",
+          "If 3×5=15, then 15÷5=5",
+          "If 3×5=15, then 15÷15=3"
+        ]),
+        answerIndex: 0,
+        hint:"Multiplication and division are connected."
+      },
+      mcqFromCorrect({
+        qid:"rm_w3_compare_7x4_vs_8x3",
+        type:"Roadmap W3 • Compare Products",
+        prompt:"Which is bigger: 7×4 or 8×3?",
+        sub:"Compute or reason quickly.",
+        correct:28, // bigger value
+        hint:"7×4=28 and 8×3=24."
+      }),
+      {
+        qid:"rm_w3_choose_missing_number",
+        type:"Roadmap W3 • Missing Number",
+        prompt:"□ × 6 = 36. What is □?",
+        sub:"Find the missing factor.",
+        choices: shuffle(["6","5","7","4"]),
+        answerIndex: 0,
+        hint:"What times 6 makes 36?"
+      },
+    ],
+    4: [
+      mcqFromCorrect({
+        qid:"rm_w4_two_step_word_3bags_then2more_each",
+        type:"Roadmap W4 • Multi-step",
+        prompt:"There are 3 bags with 4 marbles each. Then 2 more marbles are added to EACH bag. How many marbles now?",
+        sub:"Two steps: multiply, then add groups.",
+        correct:18, // start 12 then +6
+        hint:"Start: 3×4=12. Add 2 to each bag: + (3×2)=6."
+      }),
+      {
+        qid:"rm_w4_distributive_6x7",
+        type:"Roadmap W4 • Strategy",
+        prompt:"Which strategy correctly solves 6×7?",
+        sub:"Pick the correct reasoning.",
+        choices: shuffle([
+          "6×7 = 6×5 + 6×2",
+          "6×7 = 6+7",
+          "6×7 = 7−6",
+          "6×7 = 6×6"
+        ]),
+        answerIndex: 0,
+        hint:"Break 7 into 5 and 2 (or 6 and 1)."
+      },
+      mcqFromCorrect({
+        qid:"rm_w4_reason_about_near_facts_8x6",
+        type:"Roadmap W4 • Near Facts",
+        prompt:"Use a near fact: 8×6 = ?",
+        sub:"Think 8×5 then add another 8.",
+        correct:48,
+        hint:"8×5=40, plus 8 = 48."
+      }),
+      {
+        qid:"rm_w4_best_equation_story",
+        type:"Roadmap W4 • Choose Equation",
+        prompt:"A class has 4 tables with 6 kids at each table. Then 3 kids leave. Which equation gives the number of kids left?",
+        sub:"Model the story with an equation.",
+        choices: shuffle([
+          "4×6 − 3",
+          "4+6−3",
+          "4×(6−3)",
+          "6×3"
+        ]),
+        answerIndex: 0,
+        hint:"First total kids: 4×6, then subtract the 3 who leave."
+      },
+      mcqFromCorrect({
+        qid:"rm_w4_compare_strategies",
+        type:"Roadmap W4 • Compare",
+        prompt:"Which is bigger: 9×4 or 6×6?",
+        sub:"Compute and compare.",
+        correct:36,
+        hint:"9×4=36 and 6×6=36 (they are equal!)."
+      }),
+    ]
+  };
+
+  // Fix answerIndex for items that were shuffled above:
+  function fixRoadmapShuffles(){
+    // Week 1: match expression
+    const w1 = ROADMAP[1].find(q => q.qid === "rm_w1_match_expression_4x3");
+    if (w1){
+      w1.answerIndex = w1.choices.indexOf("3+3+3+3");
+    }
+    const w2eq = ROADMAP[2].find(q => q.qid === "rm_w2_equation_from_array");
+    if (w2eq){
+      w2eq.answerIndex = w2eq.choices.indexOf("2×7=14");
+    }
+    const w3t = ROADMAP[3].find(q => q.qid === "rm_w3_true_statement");
+    if (w3t){
+      w3t.answerIndex = w3t.choices.indexOf("If 3×5=15, then 15÷5=3");
+    }
+    const w3m = ROADMAP[3].find(q => q.qid === "rm_w3_choose_missing_number");
+    if (w3m){
+      w3m.answerIndex = w3m.choices.indexOf("6");
+    }
+    const w4d = ROADMAP[4].find(q => q.qid === "rm_w4_distributive_6x7");
+    if (w4d){
+      w4d.answerIndex = w4d.choices.indexOf("6×7 = 6×5 + 6×2");
+    }
+    const w4e = ROADMAP[4].find(q => q.qid === "rm_w4_best_equation_story");
+    if (w4e){
+      w4e.answerIndex = w4e.choices.indexOf("4×6 − 3");
+    }
+    const w4c = ROADMAP[4].find(q => q.qid === "rm_w4_compare_strategies");
+    if (w4c){
+      // Equal case: we used correct=36 but question asks bigger; better to make it "They are equal" MCQ:
+      // We'll convert it to a compare-choice question to be truly correct and APAAS-like.
+      w4c.type = "Roadmap W4 • Compare";
+      w4c.prompt = "Which is true about 9×4 and 6×6?";
+      w4c.sub = "Compare products carefully.";
+      w4c.choices = shuffle(["They are equal","9×4 is bigger","6×6 is bigger","Not enough info"]);
+      w4c.answerIndex = w4c.choices.indexOf("They are equal");
+      w4c.hint = "Compute both: 9×4=36 and 6×6=36.";
+      delete w4c.correct;
+    }
+  }
+  fixRoadmapShuffles();
+
+  function getRoadmapPoolForWeek(week){
+    return (ROADMAP[week] || []).slice();
+  }
+
+  // -------------------- Existing generators (random) --------------------
   function smartNumberChoices(correct, opts={}){
     const c = Number(correct);
-    const ch = state.challenge; // 1..5
+    const ch = state.challenge;
     const skill = state.skill;
-
     const spread = clamp(2 + ch + Math.floor(skill/2), 3, 14);
-
     const distractors = new Set();
-
     const candidates = [
-      c-1, c+1,
-      c-2, c+2,
-      c-10, c+10,
+      c-1, c+1, c-2, c+2, c-10, c+10,
       c + (c%10===0 ? -9 : 9),
       c + (c%10===9 ? -9 : 11),
     ].filter(x => x>=0);
@@ -296,8 +600,6 @@
     choices = shuffle(choices);
     return { choices, answerIndex: choices.indexOf(String(c)) };
   }
-
-  // ----------- Question Generators (Harder + qid) -----------
 
   function genMultiplication(){
     const variant = pick(["groups","missingFactor","arrayWord","repeatedAdd","compareProducts"]);
@@ -560,18 +862,6 @@
     if (variant === "mustBeTrue"){
       const bank = [
         {
-          key:"cats_animals",
-          prompt:"All cats are animals. Some animals are pets. Which MUST be true?",
-          choices:[
-            "Some cats are pets.",
-            "Cats are animals.",
-            "All pets are cats.",
-            "No animals are pets."
-          ],
-          ans:1,
-          hint:"Only the statement guaranteed by the first sentence is certain."
-        },
-        {
           key:"heights_chain",
           prompt:"Mia is taller than Ben. Ben is taller than Ava. Which MUST be true?",
           choices:[
@@ -649,13 +939,6 @@
           choices:["You can pick a game.","You did not get a token.","You must go to sleep.","Nothing happens."],
           ans:0,
           hint:"Chores → token → pick a game."
-        },
-        {
-          key:"ends0_even_share",
-          prompt:"If a number ends in 0, then it is even. If a number is even, it can be split into 2 equal groups. The number is 20. What MUST be true?",
-          choices:["It can be split into 2 equal groups.","It is odd.","It ends in 5.","It is less than 10."],
-          ans:0,
-          hint:"Follow the rule chain."
         }
       ];
       const q = pick(bank);
@@ -700,7 +983,6 @@
       const sets = [
         {key:"evenOdd", items:["12","14","15","16"], ans:"15", hint:"Three are even."},
         {key:"products", items:["2×6","3×4","5×3","2×5"], ans:"5×3", hint:"Only one equals 15; others equal 12 or 10."},
-        {key:"ends9", items:["19","29","39","49"], ans:"19", hint:"Three end with 9 in 20s/30s/40s; one is a teen."}
       ];
       const s = pick(sets);
       const choices = shuffle(s.items);
@@ -717,13 +999,6 @@
 
     if (variant === "trueFalseCareful"){
       const bank = [
-        {
-          key:"multiple7",
-          prompt:"Which statement is TRUE?",
-          choices:["All multiples of 2 are odd.","14 is a multiple of 7.","9 is even.","0 is greater than 1."],
-          ans:1,
-          hint:"Multiples of 7: 7, 14, 21..."
-        },
         {
           key:"threeGroups",
           prompt:"Which statement is TRUE?",
@@ -773,13 +1048,53 @@
     };
   }
 
+  // -------------------- Roadmap picker (no repeats) --------------------
+  function chooseRoadmapQuestion(){
+    const week = state.roadmapWeek;
+    const pool = getRoadmapPoolForWeek(week);
+
+    // Filter out those already seen
+    const candidates = pool.filter(q => q && q.qid && !state.seenQids.has(q.qid));
+    if (!candidates.length) return null;
+
+    // light shuffle each pick
+    return pick(candidates);
+  }
+
+  // -------------------- Main chooser --------------------
   function chooseQuestion(){
+    // Boss cadence (only when not "roadmap only")
     const bossEvery = clamp(6 - Math.floor(state.challenge/2), 3, 6);
     const isBoss = (state.index > 0 && (state.index % bossEvery === bossEvery-1));
     $("bossPill").textContent = `Boss: ${isBoss ? "On" : "Off"}`;
 
+    // Roadmap policy
+    if (state.roadmapEnabled){
+      $("roadmapPill").textContent = `Roadmap: W${state.roadmapWeek}`;
+    } else {
+      $("roadmapPill").textContent = `Roadmap: Off`;
+    }
+
+    if (state.roadmapEnabled && state.roadmapMix === "only"){
+      // Only roadmap questions
+      const rq = chooseRoadmapQuestion();
+      if (rq) return rq;
+      // If roadmap exhausted, fall back to normal (still no-repeat attempt will handle)
+    }
+
+    // Roadmap blend probability
+    if (state.roadmapEnabled && state.roadmapMix !== "only"){
+      const p = (state.roadmapMix === "often") ? 0.70 : 0.35;
+      if (Math.random() < p){
+        const rq = chooseRoadmapQuestion();
+        if (rq) return rq;
+      }
+    }
+
+    // Regular boss
     if (isBoss) return genLogicBoss();
 
+    // Regular mix
     const r = Math.random();
     if (state.mix === "logicHeavy"){
       if (r < 0.55) return genPattern();
@@ -798,7 +1113,7 @@
     return genLogicBossLite();
   }
 
-  // ----------- UI / Flow -----------
+  // -------------------- UI / Flow --------------------
   function setMode(mode){
     state.mode = mode;
     $("modePill").textContent = `Mode: ${mode==="quest" ? "Quest" : "Quiz"}`;
@@ -921,7 +1236,7 @@
 
     if (correct){
       const bonus = Math.min(12, state.streak*2);
-      const base = q.type.includes("BOSS") ? 16 : 12;
+      const base = q.type.includes("BOSS") ? 16 : (q.type.includes("Roadmap") ? 14 : 12);
       state.score += base + bonus;
       state.streak += 1;
       state.bestStreak = Math.max(state.bestStreak, state.streak);
@@ -991,11 +1306,11 @@
     setTimeout(nextQuestion, 450);
   }
 
-  // ----------- No-repeat nextQuestion() -----------
+  // -------------------- No-repeat nextQuestion() --------------------
   function nextQuestion(){
     if (state.index >= state.total){ endRound(); return; }
 
-    const MAX_TRIES = 70;
+    const MAX_TRIES = 90;
     let q = null;
 
     for (let t = 0; t < MAX_TRIES; t++){
@@ -1011,7 +1326,6 @@
     }
 
     if (!q){
-      // If variety is exhausted, allow repeats rather than stalling.
       q = chooseQuestion();
       q.qid = q.qid || (`fallback_${safeKey(q.type)}_${safeKey(q.prompt)}_${safeKey(q.choices.join("~"))}`);
       setLog(`⚠️ Variety is running low with these settings. I had to allow a repeat.`);
@@ -1030,8 +1344,9 @@
     $("answers").innerHTML = "";
 
     const title = state.mode==="quiz" ? "Quiz Complete!" : "Quest Complete!";
+    const rm = state.roadmapEnabled ? ` • Roadmap W${state.roadmapWeek} (${state.roadmapMix})` : "";
     setLog(`<div style="color:var(--text);font-weight:950;font-size:16px;margin-bottom:6px;">${title}</div>
-      <div>Score: <b>${state.score}</b> • Stars: <b>${state.stars}</b> • Best streak: <b>${state.bestStreak}</b> • Skill: <b>${state.skill}</b></div>
+      <div>Score: <b>${state.score}</b> • Stars: <b>${state.stars}</b> • Best streak: <b>${state.bestStreak}</b> • Skill: <b>${state.skill}</b>${rm}</div>
       <div style="margin-top:6px;color:var(--muted);">Use “Review Mistakes” to practice the hard ones.</div>`);
     renderStats();
   }
@@ -1045,7 +1360,7 @@
     state.bestStreak = 0;
     state.stars = 0;
     state.mistakes = [];
-    state.seenQids = new Set(); // reset uniqueness per round
+    state.seenQids = new Set();
 
     state.total = clamp(parseInt($("numQuestions").value,10)||12, 6, 30);
     $("numQuestions").value = state.total;
@@ -1060,7 +1375,8 @@
     $("startBtn").disabled = true;
     setTimeout(()=>$("startBtn").disabled=false, 350);
 
-    setLog(`Round started. Challenge <b>${state.challenge}/5</b>. No repeats this round (unless variety runs out).`);
+    const rm = state.roadmapEnabled ? `Roadmap ON (Week ${state.roadmapWeek}, ${state.roadmapMix}).` : "Roadmap OFF.";
+    setLog(`Round started. Challenge <b>${state.challenge}/5</b>. ${rm} No repeats this round (unless variety runs out).`);
     renderStats();
     renderLives();
     nextQuestion();
@@ -1083,7 +1399,7 @@
     $("answers").innerHTML = "";
     $("qType").textContent = "READY";
     $("questionText").textContent = "Press Start to begin!";
-    $("questionSub").textContent = "Harder questions show up as you build streaks.";
+    $("questionSub").textContent = "Roadmap questions are curated and won’t repeat in a round.";
     $("startBtn").textContent = "▶ Start";
     $("hintBtn").disabled = true;
     $("skipBtn").disabled = true;
@@ -1106,7 +1422,7 @@
     setLog(`<div style="color:var(--text);font-weight:950;margin-bottom:6px;">Review Mistakes</div>${html}`);
   }
 
-  // ----------- Events -----------
+  // -------------------- Events --------------------
   $("modeSelect").addEventListener("change", e => { setMode(e.target.value); resetAll(); });
   $("mixSelect").addEventListener("change", e => { state.mix = e.target.value; setLog(`Blend set to <b>${state.mix}</b>.`); });
   $("timerSelect").addEventListener("change", e => {
@@ -1117,6 +1433,24 @@
   $("challenge").addEventListener("input", e => {
     state.challenge = parseInt(e.target.value,10);
     $("challengePill").textContent = `${state.challenge}/5`;
+  });
+
+  $("roadmapEnable").addEventListener("change", e => {
+    state.roadmapEnabled = !!e.target.checked;
+    $("roadmapEnablePill").textContent = state.roadmapEnabled ? "On" : "Off";
+    $("roadmapPill").textContent = state.roadmapEnabled ? `Roadmap: W${state.roadmapWeek}` : "Roadmap: Off";
+    setLog(`Roadmap is now <b>${state.roadmapEnabled ? "ON" : "OFF"}</b>.`);
+  });
+
+  $("roadmapWeek").addEventListener("change", e => {
+    state.roadmapWeek = parseInt(e.target.value,10) || 1;
+    if (state.roadmapEnabled) $("roadmapPill").textContent = `Roadmap: W${state.roadmapWeek}`;
+    setLog(`Roadmap week set to <b>Week ${state.roadmapWeek}</b>.`);
+  });
+
+  $("roadmapMix").addEventListener("change", e => {
+    state.roadmapMix = e.target.value;
+    setLog(`Roadmap mix set to <b>${state.roadmapMix}</b>.`);
   });
 
   $("startBtn").addEventListener("click", startRound);
@@ -1137,10 +1471,14 @@
     if ((k==="s"||k==="S") && !$("skipBtn").disabled) $("skipBtn").click();
   });
 
-  // init
+  // init defaults
   setMode("quest");
   state.mix = $("mixSelect").value;
   state.challenge = parseInt($("challenge").value,10);
+  state.roadmapEnabled = $("roadmapEnable").checked;
+  state.roadmapWeek = parseInt($("roadmapWeek").value,10);
+  state.roadmapMix = $("roadmapMix").value;
+  $("roadmapEnablePill").textContent = state.roadmapEnabled ? "On" : "Off";
   renderStats(); renderLives();
 })();
 </script>
