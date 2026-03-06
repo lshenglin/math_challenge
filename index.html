@@ -16,7 +16,8 @@
       background: radial-gradient(1200px 800px at 20% 10%, #172e66 0%, var(--bg) 55%, #050814 100%);
       color:var(--text); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:18px;
     }
-    .app{ width:min(1040px,100%); display:grid; grid-template-columns: 1.25fr .75fr; gap:14px; }
+    .app{ width:min(920px,100%); display:grid; grid-template-columns: 1fr; gap:14px; }
+    .app.showCoach{ width:min(920px,100%); grid-template-columns: 1fr; }
     @media (max-width: 920px){ .app{grid-template-columns:1fr;} }
     .card{
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
@@ -88,6 +89,19 @@
     }
     .stars{ display:flex; gap:6px; align-items:center; font-size:14px; }
     .star{ filter: drop-shadow(0 6px 10px rgba(0,0,0,.35)); }
+    .explain{
+      display:none; margin-top:10px; padding:10px 12px; border-radius:14px;
+      background: rgba(122,167,255,.14); border:1px solid rgba(122,167,255,.38);
+      color:var(--text); font-size:13px; line-height:1.3;
+    }
+    .explain.show{ display:block; }
+    .explain .title{
+      font-size:12px; color:var(--accent2); text-transform:uppercase; letter-spacing:.3px;
+      margin-bottom:5px; font-weight:900;
+    }
+    #coachCard{ display:none; }
+    .app.showCoach #gameCard{ display:none; }
+    .app.showCoach #coachCard{ display:block; }
     .footerRow{ margin-top:10px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
     .kbd{ font-size:12px; color: var(--muted); }
     .kbd code{ background: rgba(0,0,0,.18); border: 1px solid rgba(255,255,255,.16); padding:2px 6px; border-radius: 8px; color: var(--text); }
@@ -96,7 +110,7 @@
 
 <body>
   <div class="app">
-    <div class="card">
+    <div class="card" id="gameCard">
       <header>
         <h1>⚡ APAAS Challenge Quest <span class="pill">No repeats + 4-week multiplication</span></h1>
         <div class="row">
@@ -131,134 +145,101 @@
 
           <div class="footerRow">
             <div class="row">
-              <button class="btn primary" id="startBtn">▶ Start</button>
-              <button class="btn" id="hintBtn" disabled>💡 Hint</button>
-              <button class="btn" id="skipBtn" disabled>⏭ Skip</button>
+              <button class="btn primary" id="startBtn">Start</button>
+              <button class="btn" id="hintBtn" disabled>Hint</button>
+              <button class="btn" id="skipBtn" disabled>Skip</button>
+              <button class="btn" id="coachToggleBtn">Show Settings</button>
             </div>
-            <div class="kbd">Keys: <code>1</code> <code>2</code> <code>3</code> <code>4</code> • Hint <code>H</code> • Skip <code>S</code></div>
+            <div class="kbd">Keys: <code>1</code> <code>2</code> <code>3</code> <code>4</code> | Hint <code>H</code> | Skip <code>S</code></div>
           </div>
 
           <div class="log" id="log">
             Turn on “4-week multiplication roadmap” on the right to inject curated accelerated multiplication questions.
           </div>
+          <div class="explain" id="explainPanel"></div>
         </div>
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" id="coachCard">
       <header>
         <h1>🛠 Coach Panel <span class="pill">Tuning</span></h1>
-        <span class="pill" id="timerPill">Timer: Off</span>
+        <div class="row">
+          <span class="pill" id="timerPill">Timer: Off</span>
+          <button class="btn" id="backToGameBtn">Back to Game</button>
+        </div>
       </header>
 
       <div class="side">
-        <h2 class="sectionTitle">Settings</h2>
+        <h2 class="sectionTitle">APAAS Test Setup</h2>
         <div class="controls">
           <div class="mini">
             <div>
-              <div style="font-weight:900;">Mode</div>
-              <div style="font-size:12px;color:var(--muted);margin-top:2px;">Quest = lives • Quiz = test style</div>
+              <div style="font-weight:900;">Focus</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:2px;">Match APAAS-style reasoning balance</div>
             </div>
-            <select id="modeSelect">
-              <option value="quest">Quest</option>
-              <option value="quiz">Quiz</option>
+            <select id="apaasFocus">
+              <option value="balanced">Balanced</option>
+              <option value="logicHeavy">Logic Focus</option>
+              <option value="mathHeavy">Math Focus</option>
+            </select>
+          </div>
+
+          <div class="mini">
+            <div>
+              <div style="font-weight:900;">Difficulty</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:2px;">Question complexity</div>
+            </div>
+            <select id="apaasDifficulty">
+              <option value="3">Standard</option>
+              <option value="4">Challenging</option>
+              <option value="5">Advanced</option>
             </select>
           </div>
 
           <div class="mini">
             <div>
               <div style="font-weight:900;">Questions</div>
-              <div style="font-size:12px;color:var(--muted);margin-top:2px;">Per round</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:2px;">Practice set length</div>
             </div>
-            <input id="numQuestions" type="number" min="6" max="30" value="12" />
+            <select id="apaasQuestions">
+              <option value="12">12</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+            </select>
           </div>
 
           <div class="mini">
             <div>
-              <div style="font-weight:900;">Timer (Quiz)</div>
+              <div style="font-weight:900;">Timer</div>
               <div style="font-size:12px;color:var(--muted);margin-top:2px;">Seconds per question</div>
             </div>
-            <select id="timerSelect">
-              <option value="0">Off</option>
-              <option value="25">25s</option>
+            <select id="apaasTimer">
               <option value="35">35s</option>
               <option value="50">50s</option>
+              <option value="0">Off</option>
             </select>
           </div>
 
           <div class="mini">
             <div>
-              <div style="font-weight:900;">Challenge</div>
-              <div style="font-size:12px;color:var(--muted);margin-top:2px;">Harder distractors + multi-step</div>
+              <div style="font-weight:900;">Multiplication Booster</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:2px;">Include targeted multiplication items</div>
             </div>
-            <div style="display:flex;align-items:center;gap:10px;">
-              <input id="challenge" type="range" min="1" max="5" value="4" />
-              <span class="pill" id="challengePill">4/5</span>
-            </div>
-          </div>
-
-          <div class="mini">
-            <div>
-              <div style="font-weight:900;">Blend</div>
-              <div style="font-size:12px;color:var(--muted);margin-top:2px;">Logic/pattern weighting</div>
-            </div>
-            <select id="mixSelect">
-              <option value="logicHeavy">Logic-heavy</option>
-              <option value="balanced">Balanced</option>
-              <option value="mathHeavy">Math-heavy</option>
-            </select>
-          </div>
-
-          <h2 class="sectionTitle" style="margin-top:10px;">4-week accelerated multiplication roadmap</h2>
-
-          <div class="mini">
-            <div>
-              <div style="font-weight:900;">Enable Roadmap</div>
-              <div style="font-size:12px;color:var(--muted);margin-top:2px;">Inject curated accelerated multiplication questions</div>
-            </div>
-            <div style="display:flex;align-items:center;gap:10px;">
-              <input id="roadmapEnable" type="checkbox" />
-              <span class="pill" id="roadmapEnablePill">Off</span>
-            </div>
-          </div>
-
-          <div class="mini">
-            <div>
-              <div style="font-weight:900;">Roadmap Week</div>
-              <div style="font-size:12px;color:var(--muted);margin-top:2px;">Week 1→4 progression</div>
-            </div>
-            <select id="roadmapWeek">
-              <option value="1">Week 1 — groups & repeated addition</option>
-              <option value="2">Week 2 — arrays & skip counting</option>
-              <option value="3">Week 3 — unknown factor & division idea</option>
-              <option value="4">Week 4 — multi-step word problems & strategy</option>
-            </select>
-          </div>
-
-          <div class="mini">
-            <div>
-              <div style="font-weight:900;">Roadmap Mix</div>
-              <div style="font-size:12px;color:var(--muted);margin-top:2px;">How often roadmap appears</div>
-            </div>
-            <select id="roadmapMix">
-              <option value="mix">Blend into game</option>
-              <option value="often">Mostly roadmap</option>
-              <option value="only">Roadmap only</option>
+            <select id="apaasRoadmap">
+              <option value="off">Off</option>
+              <option value="on">On</option>
             </select>
           </div>
 
           <div class="row">
-            <button class="btn" id="resetBtn">🔄 Reset</button>
-            <button class="btn" id="reviewBtn">📋 Review Mistakes</button>
+            <button class="btn" id="resetBtn">Reset</button>
+            <button class="btn" id="reviewBtn">Review Mistakes</button>
           </div>
         </div>
 
-        <h2 class="sectionTitle" style="margin-top:14px;">Roadmap summary</h2>
-        <div class="log" id="roadmapSummary">
-          Week 1: groups, repeated addition, equal groups, small facts<br/>
-          Week 2: arrays, skip-count by 2/3/4/5/10, choose expression<br/>
-          Week 3: missing factor, “how many groups?”, division-as-sharing idea<br/>
-          Week 4: multi-step word problems, compare strategies, distributive thinking
+        <div class="log">
+          Recommended: Balanced focus, Standard difficulty, 12 questions, 35s timer.
         </div>
       </div>
     </div>
@@ -902,35 +883,59 @@
       const kids = ["Liam","Noah","Emma"];
       const pets = ["cat","dog","fish"];
       const mapping = shuffle(pets);
-      const LiamPet = mapping[0], NoahPet = mapping[1], EmmaPet = mapping[2];
+      const trueMap = { Liam: mapping[0], Noah: mapping[1], Emma: mapping[2] };
+      const clueRules = [];
 
-      const clues = [];
-      const not1 = pick(pets.filter(p=>p!==LiamPet));
-      clues.push(`${kids[0]} does NOT have the ${not1}.`);
+      const liamWrong = pick(pets.filter(p => p !== trueMap.Liam));
+      clueRules.push({ kid:"Liam", op:"not", pet: liamWrong, text:`Liam does NOT have the ${liamWrong}.` });
 
       const clue2type = pick(["has","not"]);
-      if (clue2type==="has") clues.push(`${kids[2]} has the ${EmmaPet}.`);
-      else clues.push(`${kids[2]} does NOT have the ${pick(pets.filter(p=>p!==EmmaPet))}.`);
+      if (clue2type === "has"){
+        clueRules.push({ kid:"Emma", op:"has", pet:trueMap.Emma, text:`Emma has the ${trueMap.Emma}.` });
+      } else {
+        const emmaWrong = pick(pets.filter(p => p !== trueMap.Emma));
+        clueRules.push({ kid:"Emma", op:"not", pet:emmaWrong, text:`Emma does NOT have the ${emmaWrong}.` });
+      }
 
-      clues.push(`${kids[1]} does NOT have the ${pick(pets.filter(p=>p!==NoahPet))}.`);
+      const noahWrong = pick(pets.filter(p => p !== trueMap.Noah));
+      clueRules.push({ kid:"Noah", op:"not", pet:noahWrong, text:`Noah does NOT have the ${noahWrong}.` });
 
       const askPet = pick(pets);
-      const correctKid = (askPet===LiamPet)?kids[0]:(askPet===NoahPet)?kids[1]:kids[2];
 
+      // Evaluate all assignments that satisfy the clues + "all different pets".
+      const validAssignments = [];
+      for (const p0 of pets){
+        for (const p1 of pets){
+          if (p1 === p0) continue;
+          for (const p2 of pets){
+            if (p2 === p0 || p2 === p1) continue;
+            const assign = { Liam:p0, Noah:p1, Emma:p2 };
+            const ok = clueRules.every(rule => {
+              const hasPet = assign[rule.kid] === rule.pet;
+              return (rule.op === "has") ? hasPet : !hasPet;
+            });
+            if (ok) validAssignments.push(assign);
+          }
+        }
+      }
+
+      const possibleKids = kids.filter(k => validAssignments.some(a => a[k] === askPet));
+      const correctChoice = (possibleKids.length === 1) ? possibleKids[0] : "Not enough info";
+
+      const clues = clueRules.map(c => c.text);
       const prompt = `Three kids have different pets.\nClues:\n• ${clues.join("\n• ")}\n\nQuestion: Who has the ${askPet}?`;
       const choices = shuffle(kids.concat(["Not enough info"]));
 
       return {
-        qid:`boss_grid_${LiamPet}_${NoahPet}_${EmmaPet}_ask_${askPet}`,
+        qid:`boss_grid_${trueMap.Liam}_${trueMap.Noah}_${trueMap.Emma}_ask_${askPet}`,
         type:"LOGIC BOSS • Clues",
         prompt,
         sub:"Use the clues to eliminate.",
         choices,
-        answerIndex: choices.indexOf(correctKid),
-        hint:"Try a quick table: kid × pet. Cross out what can’t be true."
+        answerIndex: choices.indexOf(correctChoice),
+        hint:"Try a quick table: kid × pet. Cross out what can’t be true. If more than one assignment works, choose Not enough info."
       };
     }
-
     if (variant === "ifThenChain"){
       const bank = [
         {
@@ -1132,12 +1137,42 @@
     $("qTotal").textContent = state.total;
     $("qIndex").textContent = Math.min(state.index + (state.running?1:0), state.total);
     $("levelPill").textContent = `Skill: ${state.skill}`;
-    $("challengePill").textContent = `${state.challenge}/5`;
+    const cp = $("challengePill");
+    if (cp) cp.textContent = `${state.challenge}/5`;
     const pct = state.total ? (state.index / state.total) * 100 : 0;
     $("progressFill").style.width = `${pct}%`;
   }
 
   function setLog(html){ $("log").innerHTML = html; }
+  function toggleCoachPanel(forceOpen){
+    const app = document.querySelector(".app");
+    const shouldOpen = (typeof forceOpen === "boolean") ? forceOpen : !app.classList.contains("showCoach");
+    app.classList.toggle("showCoach", shouldOpen);
+    $("coachToggleBtn").textContent = "Show Settings";
+  }
+  function clearExplain(){ $("explainPanel").classList.remove("show"); $("explainPanel").innerHTML = ""; }
+  function showExplain(html){ $("explainPanel").innerHTML = html; $("explainPanel").classList.add("show"); }
+
+  function explainStrategy(q){
+    const prompt = `${q.prompt} ${q.sub}`.toLowerCase();
+    if (prompt.includes("group") || prompt.includes("array")) return "Model it as equal groups: groups times items each, then compare with the choices.";
+    if (prompt.includes("skip-count") || prompt.includes("skip count")) return "Write the skip-count sequence step by step, then pick the matching result.";
+    if (prompt.includes("missing factor") || prompt.includes("blank")) return "Use the inverse idea: test which number multiplied by the known factor gives the target.";
+    if (prompt.includes("which statement is true") || prompt.includes("true")) return "Check every option and eliminate any one that fails even once.";
+    if (prompt.includes("bigger") || prompt.includes("compare")) return "Compute both products quickly, then compare the two values directly.";
+    return "Use the hint, calculate carefully, and eliminate choices that do not match the question condition.";
+  }
+
+  function buildExplainHtml(q, chosenIdx, isTimeout){
+    const chosenText = (chosenIdx >= 0) ? q.choices[chosenIdx] : "No answer (time ran out)";
+    const correctText = q.choices[q.answerIndex];
+    return `<div class="title">Explain Solution</div>
+      <div><b>Your answer:</b> ${escapeHtml(chosenText)}</div>
+      <div><b>Correct answer:</b> ${escapeHtml(correctText)}</div>
+      <div style="margin-top:6px;"><b>Why:</b> ${escapeHtml(explainStrategy(q))}</div>
+      <div style="margin-top:4px;color:var(--muted);"><b>Hint:</b> ${escapeHtml(q.hint || "Re-read the question and test each choice.")}</div>
+      <div style="margin-top:10px;"><button class="btn primary" id="explainNextBtn">Next Question</button></div>`;
+  }
 
   function stopTimer(){
     if (state.timerHandle){ clearInterval(state.timerHandle); state.timerHandle=null; }
@@ -1192,6 +1227,7 @@
 
     $("hintBtn").disabled = false;
     $("skipBtn").disabled = false;
+    clearExplain();
     unlockAnswers();
     renderStats();
     renderLives();
@@ -1233,8 +1269,11 @@
       const btns = Array.from($("answers").querySelectorAll("button"));
       btns.forEach((b, i) => { if (i === q.answerIndex) b.classList.add("good"); b.disabled=true; });
     }
+    $("hintBtn").disabled = true;
+    $("skipBtn").disabled = true;
 
     if (correct){
+      clearExplain();
       const bonus = Math.min(12, state.streak*2);
       const base = q.type.includes("BOSS") ? 16 : (q.type.includes("Roadmap") ? 14 : 12);
       state.score += base + bonus;
@@ -1243,32 +1282,44 @@
       awardStars();
       adaptSkill(true);
 
-      const cheer = pick(["Correct ✅","Nice! ✅","Great reasoning ✅","Sharp! ✅"]);
+      const cheer = pick(["Correct ?","Nice! ?","Great reasoning ?","Sharp! ?"]);
       setLog(`${cheer} <span style="color:var(--muted)">(${escapeHtml(q.type)})</span>`);
-    } else {
-      const chosenText = (chosenIdx >= 0) ? q.choices[chosenIdx] : "(time ran out)";
-      state.mistakes.push({ q, chosen: chosenText, correct: q.choices[q.answerIndex] });
 
-      state.streak = 0;
-      adaptSkill(false);
-
-      if (state.mode === "quest"){
-        state.lives -= 1;
-        renderLives();
-        if (state.lives <= 0){
-          setLog(`Out of lives 💔 Correct: <b>${escapeHtml(q.choices[q.answerIndex])}</b><br><span style="color:var(--muted)">Press Start Again for a new round.</span>`);
-          state.index = state.total;
-          setTimeout(endRound, 700);
-          return;
-        }
-      }
-      const why = isTimeout ? "⏰ Time's up!" : "Not quite.";
-      setLog(`${why} ❌ Correct: <b>${escapeHtml(q.choices[q.answerIndex])}</b>`);
+      state.index += 1;
+      renderStats();
+      setTimeout(nextQuestion, 700);
+      return;
     }
 
-    state.index += 1;
-    renderStats();
-    setTimeout(nextQuestion, 700);
+    const chosenText = (chosenIdx >= 0) ? q.choices[chosenIdx] : "(time ran out)";
+    state.mistakes.push({ q, chosen: chosenText, correct: q.choices[q.answerIndex] });
+    showExplain(buildExplainHtml(q, chosenIdx, isTimeout));
+
+    state.streak = 0;
+    adaptSkill(false);
+
+    if (state.mode === "quest"){
+      state.lives -= 1;
+      renderLives();
+      if (state.lives <= 0){
+        setLog(`Out of lives ?? Correct: <b>${escapeHtml(q.choices[q.answerIndex])}</b><br><span style="color:var(--muted)">Press Start Again for a new round.</span>`);
+        state.index = state.total;
+        setTimeout(endRound, 700);
+        return;
+      }
+    }
+
+    const why = isTimeout ? "? Time's up!" : "Not quite.";
+    setLog(`${why} ? Correct: <b>${escapeHtml(q.choices[q.answerIndex])}</b>`);
+
+    const nextBtn = $("explainNextBtn");
+    if (nextBtn){
+      nextBtn.addEventListener("click", () => {
+        state.index += 1;
+        renderStats();
+        nextQuestion();
+      }, { once:true });
+    }
   }
 
   function useHint(){
@@ -1297,6 +1348,7 @@
     if (!state.running) return;
     stopTimer();
     lockAnswers();
+    clearExplain();
     state.streak = 0;
     const penalty = (state.mode==="quiz") ? 4 : 2;
     state.score = Math.max(0, state.score - penalty);
@@ -1342,6 +1394,7 @@
     $("hintBtn").disabled = true;
     $("skipBtn").disabled = true;
     $("answers").innerHTML = "";
+    clearExplain();
 
     const title = state.mode==="quiz" ? "Quiz Complete!" : "Quest Complete!";
     const rm = state.roadmapEnabled ? ` • Roadmap W${state.roadmapWeek} (${state.roadmapMix})` : "";
@@ -1362,21 +1415,20 @@
     state.mistakes = [];
     state.seenQids = new Set();
 
-    state.total = clamp(parseInt($("numQuestions").value,10)||12, 6, 30);
-    $("numQuestions").value = state.total;
-
-    state.timerSec = clamp(parseInt($("timerSelect").value,10)||0, 0, 120);
+    state.total = clamp(parseInt($("apaasQuestions").value,10)||12, 6, 30);
+    state.timerSec = clamp(parseInt($("apaasTimer").value,10)||0, 0, 120);
     $("timerPill").textContent = `Timer: ${state.timerSec ? "On" : "Off"}`;
 
     state.lives = (state.mode==="quest") ? 3 : 0;
     state.skill = clamp(1 + Math.floor((state.challenge-1)*1.2), 1, 7);
 
-    $("startBtn").textContent = "⏳ Playing...";
+    $("startBtn").textContent = "Playing...";
     $("startBtn").disabled = true;
     setTimeout(()=>$("startBtn").disabled=false, 350);
 
     const rm = state.roadmapEnabled ? `Roadmap ON (Week ${state.roadmapWeek}, ${state.roadmapMix}).` : "Roadmap OFF.";
-    setLog(`Round started. Challenge <b>${state.challenge}/5</b>. ${rm} No repeats this round (unless variety runs out).`);
+    setLog(`Round started. Difficulty <b>${state.challenge}/5</b>. ${rm} No repeats this round (unless variety runs out).`);
+    clearExplain();
     renderStats();
     renderLives();
     nextQuestion();
@@ -1404,7 +1456,8 @@
     $("hintBtn").disabled = true;
     $("skipBtn").disabled = true;
     $("bossPill").textContent = "Boss: Off";
-    setLog("Reset done. Set Challenge + Blend and press Start.");
+    clearExplain();
+    setLog("Reset done. Update APAAS setup and press Start.");
     renderStats();
     renderLives();
   }
@@ -1423,39 +1476,37 @@
   }
 
   // -------------------- Events --------------------
-  $("modeSelect").addEventListener("change", e => { setMode(e.target.value); resetAll(); });
-  $("mixSelect").addEventListener("change", e => { state.mix = e.target.value; setLog(`Blend set to <b>${state.mix}</b>.`); });
-  $("timerSelect").addEventListener("change", e => {
+  $("apaasFocus").addEventListener("change", e => {
+    state.mix = e.target.value;
+    setLog(`Focus set to <b>${state.mix}</b>.`);
+  });
+  $("apaasDifficulty").addEventListener("change", e => {
+    state.challenge = parseInt(e.target.value,10) || 3;
+    setLog(`Difficulty set to <b>${state.challenge}/5</b>.`);
+  });
+  $("apaasQuestions").addEventListener("change", e => {
+    const n = clamp(parseInt(e.target.value,10)||12, 6, 30);
+    e.target.value = n;
+    setLog(`Question count set to <b>${n}</b>.`);
+  });
+  $("apaasTimer").addEventListener("change", e => {
     state.timerSec = parseInt(e.target.value,10)||0;
     $("timerPill").textContent = `Timer: ${state.timerSec ? "On" : "Off"}`;
-    setLog(`Timer: <b>${state.timerSec ? state.timerSec+"s" : "Off"}</b> (Quiz mode only).`);
+    setLog(`Timer set to <b>${state.timerSec ? state.timerSec+"s" : "Off"}</b>.`);
   });
-  $("challenge").addEventListener("input", e => {
-    state.challenge = parseInt(e.target.value,10);
-    $("challengePill").textContent = `${state.challenge}/5`;
-  });
-
-  $("roadmapEnable").addEventListener("change", e => {
-    state.roadmapEnabled = !!e.target.checked;
-    $("roadmapEnablePill").textContent = state.roadmapEnabled ? "On" : "Off";
+  $("apaasRoadmap").addEventListener("change", e => {
+    state.roadmapEnabled = (e.target.value === "on");
+    state.roadmapWeek = 2;
+    state.roadmapMix = "mix";
     $("roadmapPill").textContent = state.roadmapEnabled ? `Roadmap: W${state.roadmapWeek}` : "Roadmap: Off";
-    setLog(`Roadmap is now <b>${state.roadmapEnabled ? "ON" : "OFF"}</b>.`);
-  });
-
-  $("roadmapWeek").addEventListener("change", e => {
-    state.roadmapWeek = parseInt(e.target.value,10) || 1;
-    if (state.roadmapEnabled) $("roadmapPill").textContent = `Roadmap: W${state.roadmapWeek}`;
-    setLog(`Roadmap week set to <b>Week ${state.roadmapWeek}</b>.`);
-  });
-
-  $("roadmapMix").addEventListener("change", e => {
-    state.roadmapMix = e.target.value;
-    setLog(`Roadmap mix set to <b>${state.roadmapMix}</b>.`);
+    setLog(`Multiplication booster <b>${state.roadmapEnabled ? "ON" : "OFF"}</b>.`);
   });
 
   $("startBtn").addEventListener("click", startRound);
   $("hintBtn").addEventListener("click", useHint);
   $("skipBtn").addEventListener("click", skipQuestion);
+  $("coachToggleBtn").addEventListener("click", () => toggleCoachPanel(true));
+  $("backToGameBtn").addEventListener("click", () => toggleCoachPanel(false));
   $("resetBtn").addEventListener("click", resetAll);
   $("reviewBtn").addEventListener("click", reviewMistakes);
 
@@ -1472,13 +1523,16 @@
   });
 
   // init defaults
-  setMode("quest");
-  state.mix = $("mixSelect").value;
-  state.challenge = parseInt($("challenge").value,10);
-  state.roadmapEnabled = $("roadmapEnable").checked;
-  state.roadmapWeek = parseInt($("roadmapWeek").value,10);
-  state.roadmapMix = $("roadmapMix").value;
-  $("roadmapEnablePill").textContent = state.roadmapEnabled ? "On" : "Off";
+  setMode("quiz");
+  state.mix = $("apaasFocus").value;
+  state.challenge = parseInt($("apaasDifficulty").value,10);
+  state.timerSec = parseInt($("apaasTimer").value,10)||0;
+  state.roadmapEnabled = ($("apaasRoadmap").value === "on");
+  state.roadmapWeek = 2;
+  state.roadmapMix = "mix";
+  $("timerPill").textContent = `Timer: ${state.timerSec ? "On" : "Off"}`;
+  $("roadmapPill").textContent = state.roadmapEnabled ? `Roadmap: W${state.roadmapWeek}` : "Roadmap: Off";
+  toggleCoachPanel(false);
   renderStats(); renderLives();
 })();
 </script>
